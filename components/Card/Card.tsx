@@ -33,19 +33,29 @@ const Card: React.FC<Props> = ({ model, focusedField }) => {
 
   useEffect(() => {
     function animate(layout: LayoutRectangle) {
+      const { width: fullWidth, height: fullHeight } = numberLayout
+
+      let xPosition = layout.x - 8
+      let yPosition = layout.y
+      if (layout !== numberLayout) {
+        xPosition -= (numberLayout?.width - layout?.width) / 2
+        yPosition -= (numberLayout?.height - layout?.height) / 2
+      }
+
       Animated.spring(positionAnim, {
         toValue: {
-          x: layout.x - 8,
-          y: layout.y,
+          x: xPosition,
+          y: yPosition,
         },
-        useNativeDriver: false,
+        useNativeDriver: true,
       }).start()
+
       Animated.spring(sizeAnim, {
         toValue: {
-          x: layout.width + 16,
-          y: layout.height + 4,
+          x: layout.width / fullWidth,
+          y: layout.height / fullHeight,
         },
-        useNativeDriver: false,
+        useNativeDriver: true,
       }).start()
     }
 
@@ -96,10 +106,22 @@ const Card: React.FC<Props> = ({ model, focusedField }) => {
         style={[
           styles.outline,
           {
-            left: positionAnim.x,
-            top: positionAnim.y,
-            width: sizeAnim.x,
-            height: sizeAnim.y,
+            transform: [
+              {
+                translateX: positionAnim.x,
+              },
+              {
+                translateY: positionAnim.y,
+              },
+              {
+                scaleX: sizeAnim.x,
+              },
+              {
+                scaleY: sizeAnim.y,
+              },
+            ],
+            width: numberLayout ? numberLayout.width + 16 : 0,
+            height: 37,
           },
         ]}
       />
